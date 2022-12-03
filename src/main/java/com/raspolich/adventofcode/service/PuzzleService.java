@@ -1,7 +1,9 @@
 package com.raspolich.adventofcode.service;
 
+import com.raspolich.adventofcode.model.ElfGroup;
 import com.raspolich.adventofcode.model.PuzzleId;
 import com.raspolich.adventofcode.model.RockPaperScissorsSelection;
+import com.raspolich.adventofcode.model.Rucksack;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 2, ONE), () -> getPuzzleAnswer2022Day2(ONE));
         getAnswersMap.put(new PuzzleId(2022, 2, TWO), () -> getPuzzleAnswer2022Day2(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 3, ONE), () -> getPuzzleAnswer2022Day3(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 3, TWO), () -> getPuzzleAnswer2022Day3(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -90,5 +95,30 @@ public class PuzzleService {
         }
 
         return totalPoints;
+    }
+
+    private int getPuzzleAnswer2022Day3(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 3));
+        int totalPriority = 0;
+
+        if (ONE.equals(puzzleNumber)) {
+            for (String line : inputLines) {
+                Rucksack rucksack = new Rucksack(line);
+                if (rucksack.getCommonItemType() != null) {
+                    totalPriority += rucksack.getCommonItemType().getPriority();
+                }
+            }
+        } else {
+            List<String> group = new ArrayList<>();
+            for (String line : inputLines) {
+                group.add(line);
+                if (group.size() == 3) {
+                    totalPriority += new ElfGroup(group).getBadgeTypePriority();
+                    group = new ArrayList<>();
+                }
+            }
+        }
+
+        return totalPriority;
     }
 }
