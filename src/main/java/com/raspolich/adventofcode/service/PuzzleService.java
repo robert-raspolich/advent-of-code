@@ -7,11 +7,13 @@ import com.raspolich.adventofcode.model.Rucksack;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static com.raspolich.adventofcode.model.PuzzleId.PuzzleNumber.ONE;
 import static com.raspolich.adventofcode.model.PuzzleId.PuzzleNumber.TWO;
@@ -36,18 +38,24 @@ public class PuzzleService {
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
         try {
-            String filename = "daily-inputs/puzzle-" + puzzleDay.getYear() + "-" + puzzleDay.getDay() + ".txt";
-            Path path = Paths.get(getClass().getClassLoader().getResource(filename).toURI());
-            return Files.lines(path).toList();
+            String filename = "daily-inputs/puzzle-" + puzzleDay.year() + "-" + puzzleDay.day() + ".txt";
+            URL fileUrl = getClass().getClassLoader().getResource(filename);
+            if (fileUrl != null) {
+                Path path = Paths.get(fileUrl.toURI());
+                try (Stream<String> lines = Files.lines(path)) {
+                    return lines.toList();
+                }
+            }
         } catch(Exception e) {
             //This is just for fun.  Let's ignore it.
-            return Collections.emptyList();
         }
+
+        return Collections.emptyList();
     }
 
     public int getPuzzleAnswer(PuzzleId puzzleId) {
         if (getAnswersMap.containsKey(puzzleId)) {
-            return getAnswersMap.get(puzzleId).get().intValue();
+            return getAnswersMap.get(puzzleId).get();
         }
 
         return -1;
@@ -63,7 +71,7 @@ public class PuzzleService {
                 calorieCounts.add(calorieCount);
                 calorieCount = 0;
             } else {
-                calorieCount += Integer.valueOf(calories);
+                calorieCount += Integer.parseInt(calories);
             }
         }
 
@@ -91,7 +99,7 @@ public class PuzzleService {
                 yourSelection = RockPaperScissorsSelection.fromCodes(round.split(" ")[0], round.split(" ")[1]);
             }
 
-            totalPoints += yourSelection.getRoundPoints(opponentSelection);
+            totalPoints += yourSelection != null ? yourSelection.getRoundPoints(opponentSelection) : 0;
         }
 
         return totalPoints;

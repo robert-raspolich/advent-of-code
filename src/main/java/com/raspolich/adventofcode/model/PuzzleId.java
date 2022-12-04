@@ -13,36 +13,27 @@ public class PuzzleId {
             this.value = value;
         }
 
+        public int getValue() {
+            return value;
+        }
+
         public static PuzzleNumber fromInt(int value) {
-            if (value == 1) {
-                return ONE;
-            } else if (value == 2) {
-                return TWO;
-            } else {
-                return null;
+            for (PuzzleNumber puzzleNumber : PuzzleNumber.values()) {
+                if (puzzleNumber.getValue() == value) {
+                    return puzzleNumber;
+                }
             }
+
+            return null;
         }
     }
 
     private final PuzzleDay puzzleDay;
     private final PuzzleNumber puzzleNumber;
 
-    public PuzzleId(PuzzleDay puzzleDay, PuzzleNumber puzzleNumber) {
-        this.puzzleDay = puzzleDay;
-        this.puzzleNumber = puzzleNumber;
-    }
-
     public PuzzleId(int year, int day, PuzzleNumber puzzleNumber) {
         this.puzzleDay = new PuzzleDay(year, day);
         this.puzzleNumber = puzzleNumber;
-    }
-
-    public PuzzleDay getPuzzleDay() {
-        return puzzleDay;
-    }
-
-    public PuzzleNumber getPuzzleNumber() {
-        return puzzleNumber;
     }
 
     @Override
@@ -58,34 +49,15 @@ public class PuzzleId {
         return Objects.hash(puzzleDay, puzzleNumber);
     }
 
-    public static class PuzzleDay {
-        private final int year;
-        private final int day;
-
-        public PuzzleDay(int year, int day) {
-            this.year = year;
-            this.day = day;
-        }
-
-        public int getYear() {
-            return year;
-        }
-
-        public int getDay() {
-            return day;
-        }
+    public record PuzzleDay(int year, int day) {
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            PuzzleDay puzzleDay = (PuzzleDay) o;
-            return year == puzzleDay.year && day == puzzleDay.day;
-        }
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                PuzzleDay puzzleDay = (PuzzleDay) o;
+                return year == puzzleDay.year && day == puzzleDay.day;
+            }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(year, day);
-        }
     }
 }

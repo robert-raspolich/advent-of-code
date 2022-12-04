@@ -23,25 +23,21 @@ public enum RockPaperScissorsSelection {
     public static RockPaperScissorsSelection fromCodes(String elfCode, String resultCode) {
         RockPaperScissorsSelection elfSelection = RockPaperScissorsSelection.fromCode(elfCode);
 
-        if ("X".equalsIgnoreCase(resultCode)) {
-            switch (elfSelection) {
-                case ROCK:
-                    return SCISSORS;
-                case PAPER:
-                    return ROCK;
-                case SCISSORS:
-                    return PAPER;
-            }
-        } else if ("Y".equalsIgnoreCase(resultCode)) {
-            return elfSelection;
-        } else if ("Z".equalsIgnoreCase(resultCode)) {
-            switch (elfSelection) {
-                case ROCK:
-                    return PAPER;
-                case PAPER:
-                    return SCISSORS;
-                case SCISSORS:
-                    return ROCK;
+        if (elfSelection != null) {
+            if ("X".equalsIgnoreCase(resultCode)) {
+                return switch (elfSelection) {
+                    case ROCK -> SCISSORS;
+                    case PAPER -> ROCK;
+                    case SCISSORS -> PAPER;
+                };
+            } else if ("Y".equalsIgnoreCase(resultCode)) {
+                return elfSelection;
+            } else if ("Z".equalsIgnoreCase(resultCode)) {
+                return switch (elfSelection) {
+                    case ROCK -> PAPER;
+                    case PAPER -> SCISSORS;
+                    case SCISSORS -> ROCK;
+                };
             }
         }
 
@@ -49,13 +45,9 @@ public enum RockPaperScissorsSelection {
     }
 
     private boolean beats(RockPaperScissorsSelection opponentSelection) {
-        if (((ROCK.equals(this) && SCISSORS.equals(opponentSelection)))
+        return ((ROCK.equals(this) && SCISSORS.equals(opponentSelection)))
                 || (SCISSORS.equals(this) && PAPER.equals(opponentSelection))
-                || (PAPER.equals(this) && ROCK.equals(opponentSelection))) {
-            return true;
-        } else {
-            return false;
-        }
+                || (PAPER.equals(this) && ROCK.equals(opponentSelection));
     }
 
     public int getRoundPoints(RockPaperScissorsSelection opponentSelection) {
@@ -64,7 +56,7 @@ public enum RockPaperScissorsSelection {
         } else if (this.equals(opponentSelection)) {
             return this.pointValue + 3;
         } else {
-            return this.pointValue + 0;
+            return this.pointValue;
         }
     }
 }

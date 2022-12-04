@@ -17,11 +17,11 @@ public class PuzzleRestController {
 
     @GetMapping(value = "puzzle/{year}/{day}/{puzzleNumber}")
     public ResponseEntity<Integer> getAnswer(@PathVariable int year, @PathVariable int day, @PathVariable int puzzleNumber) {
-        PuzzleId.PuzzleNumber puzzNumber = PuzzleId.PuzzleNumber.fromInt(puzzleNumber);
-        if (puzzNumber == null) {
+        PuzzleId.PuzzleNumber puzzleNo = PuzzleId.PuzzleNumber.fromInt(puzzleNumber);
+        if (puzzleNo == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok(puzzleService.getPuzzleAnswer(new PuzzleId(year, day, puzzNumber)));
+        return ResponseEntity.ok(puzzleService.getPuzzleAnswer(new PuzzleId(year, day, puzzleNo)));
     }
 }
