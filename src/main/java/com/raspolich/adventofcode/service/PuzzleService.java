@@ -1,9 +1,6 @@
 package com.raspolich.adventofcode.service;
 
-import com.raspolich.adventofcode.model.ElfGroup;
-import com.raspolich.adventofcode.model.PuzzleId;
-import com.raspolich.adventofcode.model.RockPaperScissorsSelection;
-import com.raspolich.adventofcode.model.Rucksack;
+import com.raspolich.adventofcode.model.*;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +31,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 3, ONE), () -> getPuzzleAnswer2022Day3(ONE));
         getAnswersMap.put(new PuzzleId(2022, 3, TWO), () -> getPuzzleAnswer2022Day3(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 4, ONE), () -> getPuzzleAnswer2022Day4(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 4, TWO), () -> getPuzzleAnswer2022Day4(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -128,5 +128,19 @@ public class PuzzleService {
         }
 
         return totalPriority;
+    }
+
+    private int getPuzzleAnswer2022Day4(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 4));
+
+        int count = 0;
+        for (String line : inputLines) {
+            RangePair rangePair = new RangePair(line);
+            if (ONE.equals(puzzleNumber) ? rangePair.hasFullOverlap() : rangePair.hasOverlap()) {
+                count++;
+            }
+        }
+
+        return count;
     }
 }
