@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.raspolich.adventofcode.model.PuzzleId.PuzzleNumber.ONE;
@@ -18,7 +19,7 @@ import static com.raspolich.adventofcode.model.PuzzleId.PuzzleNumber.TWO;
 @Service
 public class PuzzleService {
 
-    private final Map<PuzzleId, Supplier<Integer>> getAnswersMap;
+    private final Map<PuzzleId, Supplier<String>> getAnswersMap;
 
     public PuzzleService() {
         getAnswersMap = new HashMap<>();
@@ -34,6 +35,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 4, ONE), () -> getPuzzleAnswer2022Day4(ONE));
         getAnswersMap.put(new PuzzleId(2022, 4, TWO), () -> getPuzzleAnswer2022Day4(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 5, ONE), () -> getPuzzleAnswer2022Day5(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 5, TWO), () -> getPuzzleAnswer2022Day5(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -53,15 +57,15 @@ public class PuzzleService {
         return Collections.emptyList();
     }
 
-    public int getPuzzleAnswer(PuzzleId puzzleId) {
+    public String getPuzzleAnswer(PuzzleId puzzleId) {
         if (getAnswersMap.containsKey(puzzleId)) {
-            return getAnswersMap.get(puzzleId).get();
+            return String.valueOf(getAnswersMap.get(puzzleId).get());
         }
 
-        return -1;
+        return null;
     }
 
-    private int getPuzzleAnswer2022Day1(PuzzleId.PuzzleNumber puzzleNumber) {
+    private String getPuzzleAnswer2022Day1(PuzzleId.PuzzleNumber puzzleNumber) {
         List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 1));
         List<Integer> calorieCounts = new ArrayList<>();
 
@@ -76,14 +80,14 @@ public class PuzzleService {
         }
 
         if (ONE.equals(puzzleNumber)) {
-            return Collections.max(calorieCounts);
+            return String.valueOf(Collections.max(calorieCounts));
         } else {
             calorieCounts.sort(Collections.reverseOrder());
-            return calorieCounts.stream().limit(3).mapToInt(Integer::intValue).sum();
+            return String.valueOf(calorieCounts.stream().limit(3).mapToInt(Integer::intValue).sum());
         }
     }
 
-    private int getPuzzleAnswer2022Day2(PuzzleId.PuzzleNumber puzzleNumber) {
+    private String getPuzzleAnswer2022Day2(PuzzleId.PuzzleNumber puzzleNumber) {
         List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 2));
         int totalPoints = 0;
 
@@ -102,10 +106,10 @@ public class PuzzleService {
             totalPoints += yourSelection != null ? yourSelection.getRoundPoints(opponentSelection) : 0;
         }
 
-        return totalPoints;
+        return String.valueOf(totalPoints);
     }
 
-    private int getPuzzleAnswer2022Day3(PuzzleId.PuzzleNumber puzzleNumber) {
+    private String getPuzzleAnswer2022Day3(PuzzleId.PuzzleNumber puzzleNumber) {
         List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 3));
         int totalPriority = 0;
 
@@ -127,10 +131,10 @@ public class PuzzleService {
             }
         }
 
-        return totalPriority;
+        return String.valueOf(totalPriority);
     }
 
-    private int getPuzzleAnswer2022Day4(PuzzleId.PuzzleNumber puzzleNumber) {
+    private String getPuzzleAnswer2022Day4(PuzzleId.PuzzleNumber puzzleNumber) {
         List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 4));
 
         int count = 0;
@@ -141,6 +145,29 @@ public class PuzzleService {
             }
         }
 
-        return count;
+        return String.valueOf(count);
+    }
+
+    private String getPuzzleAnswer2022Day5(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 5));
+        List<String> stackLines = new ArrayList<>();
+        List<String> procedureLines = new ArrayList<>();
+
+        for (String line : inputLines) {
+            if (line.contains("[")) {
+                stackLines.add(line);
+            } else if (line.contains("move")) {
+                procedureLines.add(line);
+            }
+        }
+
+        CargoShip ship = new CargoShip(stackLines);
+        ship.rearrange(procedureLines.stream().map(line -> new RearrangementProcedure(line, TWO.equals(puzzleNumber))).collect(Collectors.toList()));
+
+        StringBuilder answer = new StringBuilder();
+        List<String> topCrates = ship.getTopCrates();
+        topCrates.forEach(answer::append);
+
+        return answer.toString();
     }
 }

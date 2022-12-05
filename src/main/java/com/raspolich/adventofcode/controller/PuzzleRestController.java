@@ -16,7 +16,7 @@ public class PuzzleRestController {
     PuzzleService puzzleService;
 
     @GetMapping(value = "puzzle/{year}/{day}/{puzzleNumber}")
-    public ResponseEntity<Integer> getAnswer(@PathVariable int year, @PathVariable int day, @PathVariable int puzzleNumber) {
+    public ResponseEntity<String> getAnswer(@PathVariable int year, @PathVariable int day, @PathVariable int puzzleNumber) {
         PuzzleId.PuzzleNumber puzzleNo = PuzzleId.PuzzleNumber.fromInt(puzzleNumber);
         if (puzzleNo == null) {
             return ResponseEntity.badRequest().build();
