@@ -38,6 +38,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 5, ONE), () -> getPuzzleAnswer2022Day5(ONE));
         getAnswersMap.put(new PuzzleId(2022, 5, TWO), () -> getPuzzleAnswer2022Day5(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 6, ONE), () -> getPuzzleAnswer2022Day6(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 6, TWO), () -> getPuzzleAnswer2022Day6(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -103,7 +106,7 @@ public class PuzzleService {
                 yourSelection = RockPaperScissorsSelection.fromCodes(round.split(" ")[0], round.split(" ")[1]);
             }
 
-            totalPoints += yourSelection != null ? yourSelection.getRoundPoints(opponentSelection) : 0;
+            totalPoints += Optional.ofNullable(yourSelection).map(sel -> sel.getRoundPoints(opponentSelection)).orElse(0);
         }
 
         return String.valueOf(totalPoints);
@@ -116,9 +119,7 @@ public class PuzzleService {
         if (ONE.equals(puzzleNumber)) {
             for (String line : inputLines) {
                 Rucksack rucksack = new Rucksack(line);
-                if (rucksack.getCommonItemType() != null) {
-                    totalPriority += rucksack.getCommonItemType().getPriority();
-                }
+                totalPriority += Optional.ofNullable(rucksack.getCommonItemType()).map(Rucksack.ItemType::getPriority).orElse(0);
             }
         } else {
             List<String> group = new ArrayList<>();
@@ -169,5 +170,13 @@ public class PuzzleService {
         topCrates.forEach(answer::append);
 
         return answer.toString();
+    }
+
+    private String getPuzzleAnswer2022Day6(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 6));
+        char[] data = String.join("", inputLines).toCharArray();
+
+        var device = new HandheldDevice(data, ONE.equals(puzzleNumber) ? 4 : 14);
+        return String.valueOf(device.getDelimiterPosition(1));
     }
 }

@@ -1,5 +1,7 @@
 package com.raspolich.adventofcode.model;
 
+import java.util.Optional;
+
 public enum RockPaperScissorsSelection {
     ROCK(1), PAPER(2), SCISSORS(3);
 
@@ -21,9 +23,7 @@ public enum RockPaperScissorsSelection {
     }
 
     public static RockPaperScissorsSelection fromCodes(String elfCode, String resultCode) {
-        RockPaperScissorsSelection elfSelection = RockPaperScissorsSelection.fromCode(elfCode);
-
-        if (elfSelection != null) {
+        return Optional.ofNullable(RockPaperScissorsSelection.fromCode(elfCode)).map(elfSelection -> {
             if ("X".equalsIgnoreCase(resultCode)) {
                 return switch (elfSelection) {
                     case ROCK -> SCISSORS;
@@ -38,10 +38,10 @@ public enum RockPaperScissorsSelection {
                     case PAPER -> SCISSORS;
                     case SCISSORS -> ROCK;
                 };
+            } else {
+                return null;
             }
-        }
-
-        return null;
+        }).orElse(null);
     }
 
     private boolean beats(RockPaperScissorsSelection opponentSelection) {
