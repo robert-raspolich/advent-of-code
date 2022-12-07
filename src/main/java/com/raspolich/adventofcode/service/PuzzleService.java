@@ -41,6 +41,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 6, ONE), () -> getPuzzleAnswer2022Day6(ONE));
         getAnswersMap.put(new PuzzleId(2022, 6, TWO), () -> getPuzzleAnswer2022Day6(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 7, ONE), () -> getPuzzleAnswer2022Day7(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 7, TWO), () -> getPuzzleAnswer2022Day7(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -178,5 +181,43 @@ public class PuzzleService {
 
         var device = new HandheldDevice(data, ONE.equals(puzzleNumber) ? 4 : 14);
         return String.valueOf(device.getDelimiterPosition(1));
+    }
+
+    private String getPuzzleAnswer2022Day7(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 7));
+        DeviceDirectory rootDirectory = new DeviceDirectory("/");
+        DeviceDirectory currentDirectory = rootDirectory;
+
+        for (String line : inputLines) {
+            String[] parts = line.split(" ");
+
+            if ("$".equals(parts[0])) {
+                if ("cd".equals(parts[1])) {
+                    if ("/".equals(parts[2])) {
+                        currentDirectory = rootDirectory;
+                    } else if ("..".equals(parts[2])) {
+                        currentDirectory = currentDirectory.getParentDirectory();
+                    } else {
+                        currentDirectory = currentDirectory.getSubDirectory(parts[2]);
+                    }
+                }
+            } else if ("dir".equals(parts[0])) {
+                currentDirectory.addDirectory(new DeviceDirectory(parts[1], currentDirectory));
+            } else {
+                currentDirectory.addFile(new DeviceFile(parts[1], Integer.parseInt(parts[0])));
+            }
+        }
+
+        if (ONE.equals(puzzleNumber)) {
+            int filteredSize = DeviceDirectory.allDirectories().stream().map(DeviceDirectory::size).filter(size -> size <= 100000).reduce(0, Integer::sum);
+            return String.valueOf(filteredSize);
+        } else {
+            int spaceRequired = 30_000_000 - (70_000_000 - rootDirectory.size());
+            int minSize = DeviceDirectory.allDirectories().stream()
+                    .map(DeviceDirectory::size)
+                    .filter(size -> size >= spaceRequired)
+                    .min(Integer::compare).orElse(0);
+            return String.valueOf(minSize);
+        }
     }
 }
