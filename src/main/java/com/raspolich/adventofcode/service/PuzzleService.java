@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +45,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 7, ONE), () -> getPuzzleAnswer2022Day7(ONE));
         getAnswersMap.put(new PuzzleId(2022, 7, TWO), () -> getPuzzleAnswer2022Day7(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 8, ONE), () -> getPuzzleAnswer2022Day8(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 8, TWO), () -> getPuzzleAnswer2022Day8(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -218,6 +222,25 @@ public class PuzzleService {
                     .filter(size -> size >= spaceRequired)
                     .min(Integer::compare).orElse(0);
             return String.valueOf(minSize);
+        }
+    }
+
+    private String getPuzzleAnswer2022Day8(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 8));
+        int[][] grid = new int[inputLines.size()][inputLines.get(0).length()];
+
+        for (int i = 0; i < inputLines.size(); i++) {
+            for (int j = 0; j < inputLines.get(0).length(); j++) {
+                grid[i][j] = Integer.parseInt(inputLines.get(i).substring(j, j + 1));
+            }
+        }
+
+        ForestGrid forest = new ForestGrid(grid);
+
+        if (ONE.equals(puzzleNumber)) {
+            return String.valueOf(forest.visibleTreeCount());
+        } else {
+            return String.valueOf(forest.getMaxScenicScore());
         }
     }
 }
