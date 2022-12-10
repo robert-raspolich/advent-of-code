@@ -48,6 +48,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 8, ONE), () -> getPuzzleAnswer2022Day8(ONE));
         getAnswersMap.put(new PuzzleId(2022, 8, TWO), () -> getPuzzleAnswer2022Day8(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 9, ONE), () -> getPuzzleAnswer2022Day9(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 9, TWO), () -> getPuzzleAnswer2022Day9(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -242,5 +245,17 @@ public class PuzzleService {
         } else {
             return String.valueOf(forest.getMaxScenicScore());
         }
+    }
+
+    private String getPuzzleAnswer2022Day9(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 9));
+        Rope rope = new Rope(ONE.equals(puzzleNumber) ? 2 : 10);
+
+        inputLines.forEach(line -> {
+            String[] parts = line.split(" ");
+            rope.move(Rope.Direction.fromCode(parts[0]), Integer.parseInt(parts[1]));
+        });
+
+        return String.valueOf(rope.visitedByTailCount());
     }
 }
