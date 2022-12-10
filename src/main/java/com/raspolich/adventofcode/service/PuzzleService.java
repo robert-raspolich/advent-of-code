@@ -51,6 +51,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 9, ONE), () -> getPuzzleAnswer2022Day9(ONE));
         getAnswersMap.put(new PuzzleId(2022, 9, TWO), () -> getPuzzleAnswer2022Day9(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 10, ONE), () -> getPuzzleAnswer2022Day10(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 10, TWO), () -> getPuzzleAnswer2022Day10(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -257,5 +260,48 @@ public class PuzzleService {
         });
 
         return String.valueOf(rope.visitedByTailCount());
+    }
+
+    private String getPuzzleAnswer2022Day10(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 10));
+
+        //TODO: refactor into CRT class
+        if (ONE.equals(puzzleNumber)) {
+            int x = 1;
+            int currentCycle = 1;
+            int firstCycleCheck = 20;
+            int lastCycleCheck = 220;
+            int cycleCheckIncrement = 40;
+            int totalSignalStrength = 0;
+
+            for (String line : inputLines) {
+                if (line.equals("noop")) {
+                    if ((currentCycle - firstCycleCheck) % cycleCheckIncrement == 0 && currentCycle <= lastCycleCheck) {
+                        totalSignalStrength += currentCycle * x;
+                    }
+                    currentCycle++;
+                } else if (line.startsWith("addx")) {
+                    int value = Integer.parseInt(line.split(" ")[1]);
+
+                    if ((currentCycle - firstCycleCheck) % cycleCheckIncrement == 0 && currentCycle <= lastCycleCheck) {
+                        totalSignalStrength += currentCycle * x;
+                    }
+
+                    currentCycle++;
+
+                    if ((currentCycle - firstCycleCheck) % cycleCheckIncrement == 0 && currentCycle <= lastCycleCheck) {
+                        totalSignalStrength += currentCycle * x;
+                    }
+
+                    currentCycle++;
+                    x += value;
+                }
+            }
+
+            return String.valueOf(totalSignalStrength);
+        } else {
+            CRT crt = new CRT(inputLines);
+            return crt.draw();
+        }
     }
 }
