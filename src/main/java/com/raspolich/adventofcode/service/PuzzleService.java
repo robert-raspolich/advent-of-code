@@ -3,7 +3,9 @@ package com.raspolich.adventofcode.service;
 import com.raspolich.adventofcode.model.*;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.awt.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,6 +59,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 11, ONE), () -> getPuzzleAnswer2022Day11(ONE));
         getAnswersMap.put(new PuzzleId(2022, 11, TWO), () -> getPuzzleAnswer2022Day11(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 12, ONE), () -> getPuzzleAnswer2022Day12(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 12, TWO), () -> getPuzzleAnswer2022Day12(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -320,5 +325,71 @@ public class PuzzleService {
         }
 
         return String.valueOf(Monkey.getMonkeyBusiness());
+    }
+
+    private String getPuzzleAnswer2022Day12(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 12));
+
+        char[][] grid = new char[inputLines.size()][inputLines.get(0).length()];
+        Point start = null;
+        List<Point> possibleEnds = new ArrayList<>();
+
+        for (int i = 0; i < inputLines.size(); i++) {
+            char[] line = inputLines.get(i).toCharArray();
+            for (int j = 0; j < line.length; j++) {
+                char elevation = line[j];
+
+                if (ONE.equals(puzzleNumber)) {
+                    if (elevation == 'S') {
+                        start = new Point(j, i);
+                        grid[i][j] = 'a';
+                    } else if (elevation == 'E') {
+                        possibleEnds.add(new Point(j, i));
+                        grid[i][j] = 'z';
+                    } else {
+                        grid[i][j] = elevation;
+                    }
+                } else {
+                    if (elevation == 'E') {
+                        start = new Point(j, i);
+                        grid[i][j] = 'z';
+                    } else if (elevation == 'S' || elevation == 'a') {
+                        possibleEnds.add(new Point(j, i));
+                        grid[i][j] = 'a';
+                    } else {
+                        grid[i][j] = elevation;
+                    }
+                }
+            }
+        }
+
+        int moves = 0;
+        boolean startFromEnd = TWO.equals(puzzleNumber);
+        LocationWIthElevation startLocation = new LocationWIthElevation(start, null, grid, startFromEnd);
+        Map<Point, List<Point>> currentCandidates = new HashMap<>();
+        currentCandidates.put(start, startLocation.getReachableNeighbors());
+
+        while (!CollectionUtils.isEmpty(currentCandidates)) {
+            moves++;
+            Map<Point, List<Point>> nextCandidates = new HashMap<>();
+
+            for (Point parentLocation : currentCandidates.keySet()) {
+                for (Point location : currentCandidates.get(parentLocation)) {
+                    if (possibleEnds.contains(location)) {
+                        return String.valueOf(moves);
+                    }
+
+                    List<Point> children = new LocationWIthElevation(location, parentLocation, grid, startFromEnd).getReachableNeighbors();
+                    if (!CollectionUtils.isEmpty(children)) {
+                        nextCandidates.put(location, children);
+                    }
+                }
+            }
+
+            currentCandidates = nextCandidates;
+        }
+
+
+        return "No path found";
     }
 }
