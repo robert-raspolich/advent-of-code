@@ -54,6 +54,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 10, ONE), () -> getPuzzleAnswer2022Day10(ONE));
         getAnswersMap.put(new PuzzleId(2022, 10, TWO), () -> getPuzzleAnswer2022Day10(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 11, ONE), () -> getPuzzleAnswer2022Day11(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 11, TWO), () -> getPuzzleAnswer2022Day11(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -303,5 +306,19 @@ public class PuzzleService {
             CRT crt = new CRT(inputLines);
             return crt.draw();
         }
+    }
+
+    private String getPuzzleAnswer2022Day11(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 11));
+
+        Monkey.initializeInstances(inputLines);
+        int rounds = ONE.equals(puzzleNumber) ? 20 : 10000;
+        Monkey.setWorryDivisor(ONE.equals(puzzleNumber) ? 3 : 1);
+
+        for (int i = 0; i < rounds; i++) {
+            Monkey.doRound();
+        }
+
+        return String.valueOf(Monkey.getMonkeyBusiness());
     }
 }
