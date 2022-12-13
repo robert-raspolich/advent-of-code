@@ -1,11 +1,14 @@
 package com.raspolich.adventofcode.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.raspolich.adventofcode.model.*;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.awt.*;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +26,8 @@ import static com.raspolich.adventofcode.model.PuzzleId.PuzzleNumber.TWO;
 public class PuzzleService {
 
     private final Map<PuzzleId, Supplier<String>> getAnswersMap;
+
+    //private final Logger log = LoggerFactory.getLogger(getClass());
 
     public PuzzleService() {
         getAnswersMap = new HashMap<>();
@@ -62,6 +67,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 12, ONE), () -> getPuzzleAnswer2022Day12(ONE));
         getAnswersMap.put(new PuzzleId(2022, 12, TWO), () -> getPuzzleAnswer2022Day12(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 13, ONE), () -> getPuzzleAnswer2022Day13(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 13, TWO), () -> getPuzzleAnswer2022Day13(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -391,5 +399,61 @@ public class PuzzleService {
 
 
         return "No path found";
+    }
+
+    private String getPuzzleAnswer2022Day13(PuzzleId.PuzzleNumber puzzleNumber) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<Object>>() {}.getType();
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 13));
+
+        if (ONE.equals(puzzleNumber)) {
+            List<List<Object>> packets = new ArrayList<>();
+            List<PacketPair> pairs = new ArrayList<>();
+            for (String line : inputLines) {
+                if (StringUtils.isNotBlank(line)) {
+                    List<Object> parsed = gson.fromJson(line, listType);
+                    packets.add(parsed);
+                } else if (packets.size() == 2) {
+                    pairs.add(new PacketPair(packets.get(0), packets.get(1)));
+                    packets = new ArrayList<>();
+                }
+            }
+
+            int validIndexSum = 0;
+            for (int i = 0; i < pairs.size(); i++) {
+                if (pairs.get(i).valid()) {
+                    validIndexSum += (i + 1);
+                }
+            }
+
+            return String.valueOf(validIndexSum);
+        } else {
+            List<Packet> packets = new ArrayList<>();
+            Packet divider1 = new Packet(gson.fromJson("[[2]]", listType));
+            Packet divider2 = new Packet(gson.fromJson("[[6]]", listType));
+            packets.add(divider1);
+            packets.add(divider2);
+
+            for (String line : inputLines) {
+                if (StringUtils.isNotBlank(line)) {
+                    List<Object> parsed = gson.fromJson(line, listType);
+                    packets.add(new Packet(parsed));
+                }
+            }
+
+            int index1 = 0;
+            int index2 = 0;
+            packets = packets.stream().sorted().collect(Collectors.toList());
+            for (int i = 0; i < packets.size(); i++) {
+                if (packets.get(i).compareTo(divider1) == 0) {
+                    index1 = i + 1;
+                }
+                if (packets.get(i).compareTo(divider2) == 0) {
+                    index2 = i + 1;
+                }
+            }
+
+            return String.valueOf(index1 * index2);
+        }
     }
 }
