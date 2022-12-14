@@ -70,6 +70,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 13, ONE), () -> getPuzzleAnswer2022Day13(ONE));
         getAnswersMap.put(new PuzzleId(2022, 13, TWO), () -> getPuzzleAnswer2022Day13(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 14, ONE), () -> getPuzzleAnswer2022Day14(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 14, TWO), () -> getPuzzleAnswer2022Day14(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -455,5 +458,12 @@ public class PuzzleService {
 
             return String.valueOf(index1 * index2);
         }
+    }
+
+    private String getPuzzleAnswer2022Day14(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 14));
+        Cave cave = Cave.fromInputLines(inputLines, TWO.equals(puzzleNumber));
+
+        return String.valueOf(cave.fillWithSand(new Point(500, 0)));
     }
 }
