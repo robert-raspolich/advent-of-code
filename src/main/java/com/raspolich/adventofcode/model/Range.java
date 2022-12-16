@@ -7,6 +7,11 @@ public class Range {
     private final int start;
     private final int end;
 
+    public Range(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
+
     public Range(String raw) {
         int tempStart = 0;
         int tempEnd = 0;

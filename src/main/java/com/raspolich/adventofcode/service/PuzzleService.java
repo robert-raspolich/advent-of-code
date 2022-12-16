@@ -73,6 +73,9 @@ public class PuzzleService {
 
         getAnswersMap.put(new PuzzleId(2022, 14, ONE), () -> getPuzzleAnswer2022Day14(ONE));
         getAnswersMap.put(new PuzzleId(2022, 14, TWO), () -> getPuzzleAnswer2022Day14(TWO));
+
+        getAnswersMap.put(new PuzzleId(2022, 15, ONE), () -> getPuzzleAnswer2022Day15(ONE));
+        getAnswersMap.put(new PuzzleId(2022, 15, TWO), () -> getPuzzleAnswer2022Day15(TWO));
     }
 
     public List<String> getPuzzleInput(PuzzleId.PuzzleDay puzzleDay) {
@@ -465,5 +468,16 @@ public class PuzzleService {
         Cave cave = Cave.fromInputLines(inputLines, TWO.equals(puzzleNumber));
 
         return String.valueOf(cave.fillWithSand(new Point(500, 0)));
+    }
+
+    private String getPuzzleAnswer2022Day15(PuzzleId.PuzzleNumber puzzleNumber) {
+        List<String> inputLines = getPuzzleInput(new PuzzleId.PuzzleDay(2022, 15));
+        BeaconGrid grid = BeaconGrid.fromInputLines(inputLines);
+
+        if (ONE.equals(puzzleNumber)) {
+            return String.valueOf(grid.nonBeaconPositionsInRow(2000000));
+        } else {
+            return String.valueOf(grid.tuningFrequency());
+        }
     }
 }
